@@ -10,6 +10,6 @@ while True:
     print("From Server :", in_data.decode())
     out_data = input()
     client.sendall(bytes(out_data, 'UTF-8'))
-    if out_data == 'bye':
+    if out_data == '2':
         break
 client.close()
