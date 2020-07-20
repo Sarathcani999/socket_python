@@ -30,6 +30,7 @@ class Database :
         f.close()
         self.writeLines(newLines)
         return ret_msg
+
     def deleteReservation(self,bookid):
         f = open('demo.txt', 'r')
         Lines = f.readlines()
@@ -78,7 +79,7 @@ class ClientThread(threading.Thread):
                 msg=db.makeReservation(int(msg[2:]))
             else :
                 # delete Reservations
-                db.Database()
+                db=Database()
                 msg=db.deleteReservation(int(msg[2:]))
             self.csocket.send(bytes(msg, 'UTF-8'))
         print("Client at ", clientAddress, " disconnected...")
