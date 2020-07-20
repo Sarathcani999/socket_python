@@ -7,9 +7,9 @@ client.connect((SERVER, PORT))
 client.sendall(bytes("3", 'UTF-8'))
 while True:
     in_data = client.recv(1024)
-    print("From Librarian/Server :", in_data.decode())
+    print("From Server :", in_data.decode())
     out_data = input()
     client.sendall(bytes(out_data, 'UTF-8'))
-    if out_data == '2':
+    if out_data == 'bye':
         break
 client.close()

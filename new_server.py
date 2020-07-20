@@ -1,8 +1,6 @@
 import socket, threading
-
-
-class Database:
-    def writeLines(self, lines):
+class Database :
+    def writeLines(self , lines):
         # L = ["1 100\n", "0 101\n", "0 102\n"]
 
         # writing to file
@@ -10,7 +8,29 @@ class Database:
         file1.writelines(lines)
         file1.close()
 
-    def makeReservation(self, bookid):
+    def makeReservation(self,bookid):
+        f = open('demo.txt', 'r')
+        Lines = f.readlines()
+
+        ret_msg = "Already Reserved"
+        count = 0
+        newLines = []
+        # Strips the newline character
+        for line in Lines:
+            if int(line[2:]) == bookid :
+                if int(line[0]) == 0 :
+                    entry="1 " + line[2:]
+                    newLines.append(entry)
+                    ret_msg = "Reserved"
+                else :
+                    newLines.append(line)
+            else:
+                newLines.append(line)
+
+        f.close()
+        # print(newLines)
+        return ret_msg
+    def deleteReservation(self,bookid):
         f = open('demo.txt', 'r')
         Lines = f.readlines()
 
@@ -21,6 +41,7 @@ class Database:
         for line in Lines:
             if int(line[2:]) == bookid:
                 if int(line[0]) == 0:
+                    print("IN")
                     entry = "1 " + line[2:]
                     newLines.append(entry)
                     ret_msg = "Reserved"
@@ -30,34 +51,9 @@ class Database:
                 newLines.append(line)
 
         f.close()
-        # print(newLines)
-        return ret_msg
-
-    def deleteReservation(self, bookid):
-        f = open('demo.txt', 'r')
-        Lines = f.readlines()
-
-        ret_msg = "Not Reserved"
-        count = 0
-        newLines = []
-        # Strips the newline character
-        for line in Lines:
-            if int(line[2:]) == bookid:
-                if int(line[0]) == 1:
-                    print("IN")
-                    entry = "0 " + line[2:]
-                    newLines.append(entry)
-                    ret_msg = "Reserved cancelled"
-                else:
-                    newLines.append(line)
-            else:
-                newLines.append(line)
-
-        f.close()
         self.writeLines(newLines)
         # print(newLines)
         return ret_msg
-
 
 class ClientThread(threading.Thread):
     def __init__(self, clientAddress, clientsocket):
@@ -72,22 +68,20 @@ class ClientThread(threading.Thread):
         while True:
             data = self.csocket.recv(2048)
             msg = data.decode()
-            req_code = int(msg[0])
-            print("reqcode" , req_code)
-            if req_code == 3:
-                ret_msg = "Conn est"
-            elif req_code == 2:
-                self.csocket.send(bytes("exit", 'UTF-8'))
+
+            if int(msg[0]) == 2:
                 break
-            elif req_code == 0:
-                solution = Database()
-                ret_msg = solution.makeReservation(bookid=int(msg[2:]))
-            else:
-                solution = Database()
-                ret_msg = solution.deleteReservation(int(msg[2:]))
-            # print("from client", req_code)
-            # if req_code==0:
-        self.csocket.send(bytes(ret_msg, 'UTF-8'))
+            elif int(msg[0])==3 :
+                msg="Conn Established"
+                pass
+            elif int(msg[0]) == 0 :
+                # make reservation
+                db=Database()
+                msg=db.makeReservation(int(msg[2:]))
+            else :
+                # delete Reservations
+                msg=db.deleteReservation(int(msg[2:]))
+            self.csocket.send(bytes(msg, 'UTF-8'))
         print("Client at ", clientAddress, " disconnected...")
 
 
