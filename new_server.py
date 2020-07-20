@@ -33,18 +33,16 @@ class Database :
     def deleteReservation(self,bookid):
         f = open('demo.txt', 'r')
         Lines = f.readlines()
-
-        ret_msg = "Already Reserved"
+        ret_msg = "Not Reserved"
         count = 0
         newLines = []
         # Strips the newline character
         for line in Lines:
             if int(line[2:]) == bookid:
-                if int(line[0]) == 0:
-                    print("IN")
-                    entry = "1 " + line[2:]
+                if int(line[0]) == 1:
+                    entry = "0 " + line[2:]
                     newLines.append(entry)
-                    ret_msg = "Reserved"
+                    ret_msg = "res deleted"
                 else:
                     newLines.append(line)
             else:
@@ -80,6 +78,7 @@ class ClientThread(threading.Thread):
                 msg=db.makeReservation(int(msg[2:]))
             else :
                 # delete Reservations
+                db.Database()
                 msg=db.deleteReservation(int(msg[2:]))
             self.csocket.send(bytes(msg, 'UTF-8'))
         print("Client at ", clientAddress, " disconnected...")
