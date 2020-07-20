@@ -28,7 +28,7 @@ class Database :
                 newLines.append(line)
 
         f.close()
-        # print(newLines)
+        self.writeLines(newLines)
         return ret_msg
     def deleteReservation(self,bookid):
         f = open('demo.txt', 'r')
